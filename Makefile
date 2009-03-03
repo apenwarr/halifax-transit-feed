@@ -1,4 +1,4 @@
-default: hfxfeed.zip
+default: relational hfxfeed.zip
 
 hfxfeed.zip: hfxtable.yml createfeed.py
 	./createfeed.py --input=hfxtable.yml --output=hfxfeed.zip
@@ -30,6 +30,10 @@ hfxtable.yml: hfxtable.yml.in $(ROUTE_FILES) indent-route.pl
 	@$(foreach ROUTE_FILE, $(ROUTE_FILES), \
 		echo "Parsing $(ROUTE_FILE)"; \
 		./indent-route.pl < $(ROUTE_FILE) >> hfxtable.yml;)
+		
+relational: hfxtable.yml
+	rm -f $(wildcard r-*.csv)
+	./to-relational.py <hfxtable.yml
 
 clean:
-	rm -f hfxtable.yml hfxfeed.zip *~
+	rm -f hfxtable.yml hfxfeed.zip *~ r-*.csv
